@@ -1,0 +1,86 @@
+package pr2.vererbung.racewars.tests;
+
+import org.junit.Test;
+
+import pr2.vererbung.racewars.model.Mensch;
+import pr2.vererbung.racewars.model.Ork;
+import pr2.vererbung.racewars.model.Rasse;
+import pr2.vererbung.racewars.model.Wesen;
+
+import static org.junit.Assert.*;
+
+public class WesenTests {
+    
+    @Test
+    public void testConstructor() {
+        Wesen wesen = new Wesen("Testwesen", 100, 10, 2, 0.5) {
+            @Override
+            public Rasse getRasse() {
+                return null; // Da diese Methode abstrakt ist, wird sie überschrieben und es wird null zurückgegeben
+            }
+        };
+        assertEquals("Testwesen", wesen.getName());
+        assertEquals(100, wesen.getLifepoints(), 0.001);
+        assertEquals(10, wesen.getDamage(), 0.001);
+        assertEquals(2, wesen.getSpeed(), 0.001);
+        assertEquals(0.5, wesen.getArmor(), 0.001);
+    }
+    
+    @Test
+    public void testAttack() {
+        Wesen attacker = new Wesen("Angreifer", 100, 20, 2, 0.2) {
+            @Override
+            public Rasse getRasse() {
+                return null;
+            }
+        };
+        Wesen defender = new Wesen("Verteidiger", 100, 10, 2, 0.5) {
+            @Override
+            public Rasse getRasse() {
+                return null;
+            }
+        };
+        double damage = attacker.attack(defender);
+        assertTrue(defender.getLifepoints() < 100); // Überprüfen, ob der Verteidiger Schaden genommen hat
+        assertTrue(damage > 0); // Überprüfen, ob der Schaden positiv ist
+    }
+    
+    @Test
+    public void testBeschraenkeSchaden() {
+        Wesen mensch = new Wesen("Mensch", 100, 20, 2, 0.2) {
+            @Override
+            public Rasse getRasse() {
+                return null;
+            }
+        };
+        double damage = mensch.beschraenkeSchaden(100);
+        assertEquals(90, damage, 10); // Überprüfen, ob der Schaden für Menschen richtig beschränkt wird
+    }
+    
+    @Test
+    public void testIsAlive() {
+        Wesen angreifer = new Ork("Angreifer");
+        Wesen verteidiger = new Mensch("Verteidiger");
+        verteidiger.attack(angreifer); // Angreifer attackiert den Verteidiger, um ihn zu töten
+        assertFalse(angreifer.isAlive()); // Überprüfen, ob der Angreifer jetzt tot ist
+    }
+
+
+    
+    @Test
+    public void testToString() {
+        Wesen wesen = new Wesen("Testwesen", 100, 20, 2, 0.2) {
+            @Override
+            public Rasse getRasse() {
+                return null;
+            }
+        };
+        String expected = "Name: Testwesen\n" +
+                          "Rasse: null\n" + // Da getRasse nicht implementiert ist, wird null erwartet
+                          "Lebenspunkte: 100,00\n" +
+                          "Schaden: 20,00\n" +
+                          "Geschwindigkeit: 2,00\n" +
+                          "Rüstung: 0,20\n";
+        assertEquals(expected, wesen.toString());
+    }
+}
