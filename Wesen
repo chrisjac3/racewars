@@ -1,1 +1,136 @@
+package pr2.vererbung.racewars.model;
+
+/**
+ * Basisklasse für alle Wesen im Spiel.
+ */
+public abstract class Wesen {
+
+    private final String name;
+    private double lifepoints;
+    private final double damage;
+    private final double speed;
+    private final double armor;
+    private final Element leaderElement;
+
+    public Wesen(String name, double lifepoints, double damage, double speed, double armor) {
+        this.name = name;
+        this.lifepoints = lifepoints;
+        this.damage = damage;
+        this.speed = speed;
+        this.armor = armor;
+        this.leaderElement = null;
+    }
+
+    public abstract Rasse getRasse();
+
+    public String getName() {
+        return name;
+    }
+
+    public double getLifepoints() {
+        return lifepoints;
+    }
+
+    public double getDamage() {
+        return damage;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public double getArmor() {
+        return armor;
+    }
+
+    public Element getLeaderElement() {
+        return leaderElement;
+    }
+
+    /**
+     * Greife das andere Wesen an. Der Schaden wird berechnet und beim gegnerischen
+     * Wesen abgezogen.
+     *
+     * @param gegner Wesen, das angegriffen werden soll.
+     * @return Zugefügter Schaden.
+     */
+    public double attack(Wesen gegner) {
+        if (!this.isAlive() || !gegner.isAlive()) {
+            return 0; // Kein Schaden, wenn entweder der Angreifer oder das Ziel tot ist
+        }
+
+        // Berechne den Schaden
+        double damage = this.getSpeed() * this.getDamage();
+
+        // Überprüfe, ob der Angreifer ein Mensch ist und den Schaden entsprechend
+        // beschränke
+        damage = this.beschraenkeSchaden(damage);
+
+        // Überprüfe, ob der Angreifer ein Anführer ist und den Schaden entsprechend
+        // erhöhe
+        if (this.getRasse() == Rasse.MENSCH) {
+            damage *= this.getRasse().getBonus();
+        }
+
+        // Überprüfe, ob der Anführer auf einen anderen Anführer trifft und dessen
+        // Element überlegen ist
+        if (this.getLeaderElement() != null && isAdvanced(this.getRasse().getElement(), gegner.getLeaderElement())) {
+            damage *= this.getRasse().getBonus(); // Bonus für überlegenes Element
+        }
+
+        // Reduziere den Schaden basierend auf der Rüstung des Ziels
+        damage *= (1 - gegner.getArmor());
+
+        // Ziehe dem Ziel den Schaden von den Lebenspunkten ab
+        gegner.lifepoints -= damage;
+
+        // Überprüfe, ob das Ziel tot ist
+        if (gegner.isAlive() == false) {
+            gegner.lifepoints = 0;
+        }
+
+        return damage;
+    }
+
+    /**
+     * Beschränkt den Schaden.
+     *
+     * @param dmg Schaden.
+     * @return Vebleibender Schaden nach der Beschränkung.
+     */
+
+    public double beschraenkeSchaden(double damage) {
+        // Nur bei Menschen den Schaden um 10% reduzieren
+        if (getRasse() == Rasse.MENSCH) {
+            damage *= 0.9; // Schaden um 10% reduzieren
+        }
+        // Ansonsten den Schaden unverändert zurückgeben
+        return damage;
+    }
+
+    private boolean isAdvanced(Element attackElement, Element defendElement) {
+        return (attackElement == Element.FEUER && defendElement == Element.LUFT)
+                || (attackElement == Element.WASSER && defendElement == Element.FEUER)
+                || (attackElement == Element.ERDE && defendElement == Element.WASSER)
+                || (attackElement == Element.LUFT && defendElement == Element.ERDE);
+    }
+
+    public boolean isAlive() {
+        return lifepoints > 0;
+    }
+
+    // Überschriebene Methode zur Ausgabe der Wesen-Informationen
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name: ").append(name).append("\n");
+        sb.append("Rasse: ").append(getRasse()).append("\n");
+        sb.append("Lebenspunkte: ").append(String.format("%.2f", lifepoints)).append("\n");
+        sb.append("Schaden: ").append(String.format("%.2f", damage)).append("\n");
+        sb.append("Geschwindigkeit: ").append(String.format("%.2f", speed)).append("\n");
+        sb.append("Rüstung: ").append(String.format("%.2f", armor)).append("\n");
+        return sb.toString();
+    }
+
+}
 
