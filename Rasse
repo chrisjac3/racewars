@@ -1,0 +1,59 @@
+package pr2.vererbung.racewars.model;
+
+/**
+ * Klasse, um die Rasse eines Wesens anzugeben. Die Klasse enthält
+ * vier statische Referenzen, welche die vier Rassen des Spiels repräsentieren.
+ * Außerdem speichert sie noch die Kosten pro Rasse.
+ */
+public final class Rasse {
+    public static final int MAX_ANZAHL_WESEN = 100; // Maximale Anzahl von Wesen
+    
+    public static final Rasse ORK = new Rasse("Ork", 300, 150, Element.ERDE, 1.2);
+    public static final Rasse UNTOTER = new Rasse("Untoter", 140, 70, Element.WASSER, 2.3);
+    public static final Rasse MENSCH = new Rasse("Mensch", 220, 110, Element.FEUER, 5.0);
+    public static final Rasse NACHTELF = new Rasse("Nachtelf", 290, 145, Element.LUFT, 3.0);
+    
+    private static final Rasse[] ALL_RASSEN = {ORK, UNTOTER, MENSCH, NACHTELF};
+    
+    private final String name;
+    private final int anfuehrerKosten;
+    private final int wesenKosten;
+    private final Element element;
+    private final double bonus;
+
+    public Rasse(String name, int anfuehrerKosten, int wesenKosten, Element element, double bonus) {
+        this.name = name;
+        this.anfuehrerKosten = anfuehrerKosten;
+        this.wesenKosten = wesenKosten;
+        this.element = element;
+        this.bonus = bonus;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAnfuehrerKosten() {
+        return anfuehrerKosten;
+    }
+
+    public int getWesenKosten() {
+        return wesenKosten;
+    }
+    
+    public Element getElement() {
+        return element;
+    }
+    
+    public double getBonus() {
+        return bonus;
+    }
+
+    
+ // Methode, um alle verfügbaren Rassen zurückzugeben
+    public static Rasse[] values() {
+        return ALL_RASSEN;
+    }
+
+
+}
