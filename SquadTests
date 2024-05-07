@@ -1,1 +1,44 @@
+package pr2.vererbung.racewars.tests;
+
+import org.junit.jupiter.api.Test;
+import pr2.vererbung.racewars.model.Rasse;
+import pr2.vererbung.racewars.controller.Squad;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class SqaudTests {
+
+    @Test
+    void testKaufeEinheiten() {
+        Squad squad = new Squad("Test Squad");
+        squad.kaufeEinheiten(Rasse.MENSCH, 3);
+        assertEquals(3, squad.getSquadSize());
+    }
+
+    @Test
+    void testKaempfe() {
+        Squad squad1 = new Squad("Test Squad 1");
+        Squad squad2 = new Squad("Test Squad 2");
+        squad1.kaufeEinheiten(Rasse.MENSCH, 3);
+        squad2.kaufeEinheiten(Rasse.ORK, 2);
+        squad1.kaempfe(squad2);
+        // Hier können Sie weitere Überprüfungen durchführen, um sicherzustellen, dass der Kampf korrekt abläuft
+    }
+
+    @Test
+    void testGetSquadSize() {
+        Squad squad = new Squad("Test Squad");
+        squad.kaufeEinheiten(Rasse.MENSCH, 5);
+        assertEquals(5, squad.getSquadSize());
+    }
+
+   
+    @Test
+    void testIsKampfBeendet() {
+        Squad squad = new Squad("Test Squad");
+        assertFalse(squad.isKampfBeendet());
+        // Hier können Sie weitere Überprüfungen durchführen, nachdem der Kampf beendet wurde
+    }
+}
+
 
