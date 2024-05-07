@@ -1,0 +1,21 @@
+package pr2.vererbung.racewars.model;
+
+public class Ork extends Wesen {
+    
+    public Ork(String name) {
+        super(name, 100, 33, 1, 0.3); // Orks haben 100 lifepoints, 33 damage, 1 speed und 30% armor
+    }
+
+    @Override
+    public String toString() {
+        return "Ork " + super.toString();
+    }
+
+
+    @Override
+    public Rasse getRasse() {
+       return Rasse.ORK;
+    }
+
+    
+}
