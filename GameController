@@ -1,0 +1,105 @@
+package pr2.vererbung.racewars.controller;
+
+import pr2.vererbung.racewars.model.Rasse;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Hauptklasse für das Spiel. Diese Klasse wird gestartet, um das Spiel zu
+ * beginnen.
+ */
+public final class GameController {
+    private List<Squad> squads;
+    public int runde;
+
+    public GameController() {
+        squads = new ArrayList<>();
+    }
+
+    /**
+     * Spielt das Spiel bis zum Ende.
+     */
+
+    public void runGame() {
+        runde = 1;
+
+        // Erstelle die Squads
+        Squad squad1 = new Squad("The walking dead");
+        Squad squad2 = new Squad("Legolas and friends");
+
+        // Kaufe Einheiten für die Squads
+        squad1.kaufeEinheiten(Rasse.MENSCH, 3);
+        squad2.kaufeEinheiten(Rasse.ORK, 2);
+
+        System.out.println("---------START DES SPIELS-------");
+
+        while (true) {
+            System.out.println("---------RUNDE " + runde + "-------");
+            printSquads(squad1, squad2);
+
+            // Führe den Kampf durch
+            kampfRunde(squad1, squad2);
+
+            // Drucke die restlichen Lebenspunkte der Einheiten beider Squads
+            System.out.println("\nRestliche Lebenspunkte nach Runde " + runde + ":");
+
+            System.out.println("Squad von: The walking dead");
+            System.out.println("  Squadgröße: " + squad1.getSquadSize());
+            squad1.printSquadDetails();
+
+            System.out.println("Squad von: Legolas and friends");
+            System.out.println("  Squadgröße: " + squad2.getSquadSize());
+            squad2.printSquadDetails();
+
+            // Überprüfe, ob das Spiel vorbei ist
+            if (squad1.getSquadSize() == 0 || squad2.getSquadSize() == 0) {
+                System.out.println("---------SPIEL BEENDET-------");
+                String sieger = squad1.getSquadSize() == 0 ? squad2.getName() : squad1.getName();
+                System.out.println("Sieger: " + sieger);
+                break;
+            }
+
+            runde++;
+        }
+    }
+
+    private void kampfRunde(Squad squad1, Squad squad2) {
+        /// Führe den Kampf zwischen den beiden Squads durch
+        squad1.kampf(squad2);
+
+    }
+
+    private void printSquads(Squad squad1, Squad squad2) {
+        System.out.println("Squad von: " + squad1.getName());
+        squad1.printSquadDetails();
+        System.out.println("Squad von: " + squad2.getName());
+        squad2.printSquadDetails();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        int aktuelleRunde = 1; // Aktuelle Runde als lokale Variable initialisieren
+        sb.append("Aktuelle Runde: ").append(aktuelleRunde).append("\n");
+        sb.append("Squads: \n");
+        for (Squad squad : this.squads) {
+            sb.append(squad.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Führt eine Runde des Spiels aus, in der beide Squads angreifen.
+     */
+    /**
+     * Einstiegspunkt in das Programm.
+     *
+     * @param args Kommandozeilenargumente.
+     */
+    public static void main(String[] args) {
+        GameController game = new GameController();
+        game.runGame();
+    }
+
+}
