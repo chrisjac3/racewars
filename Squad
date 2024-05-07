@@ -1,0 +1,218 @@
+package pr2.vererbung.racewars.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import pr2.vererbung.racewars.model.Mensch;
+import pr2.vererbung.racewars.model.Nachtelf;
+import pr2.vererbung.racewars.model.Ork;
+import pr2.vererbung.racewars.model.Rasse;
+import pr2.vererbung.racewars.model.Untoter;
+import pr2.vererbung.racewars.model.Wesen;
+
+public class Squad {
+    String name;
+    ArrayList<Wesen> einheiten;
+    private boolean kampfBeendet; // Feld zur Verfolgung des Kampfendes
+
+    // Neue Liste für Kaempfer
+    private List<Wesen> kaempferListe;
+
+    public Squad(String name) {
+        this.name = name;
+        this.einheiten = new ArrayList<>();
+        this.kaempferListe = new ArrayList<>();
+    }
+
+    public void addEinheit(Wesen einheit) {
+        einheiten.add(einheit);
+        kaempferListe.add(einheit);
+    }
+
+    public void removeEinheit(Wesen einheit) {
+        this.einheiten.remove(einheit);
+        kaempferListe.add(einheit);
+    }
+
+    public Wesen getRandomEinheit() {
+        int index = (int) (Math.random() * einheiten.size());
+        return einheiten.get(index);
+    }
+
+    public List<Wesen> getEinheiten() {
+        return einheiten;
+    }
+
+    public int getSquadSize() {
+        return this.einheiten.size();
+    }
+
+    public void printSquadDetails() {
+        for (Wesen wesen : einheiten) {
+            System.out.println("    " + wesen.getName() + " [" + wesen.getLifepoints() + "]");
+        }
+    }
+
+    // Methode zum Hinzufügen einer bestimmten Anzahl von Einheiten einer bestimmten
+    // Rasse
+    public void kaufeEinheiten(Rasse rasse, int anzahl) {
+        // Zuerst den Anführer kaufen
+        addEinheit(kaufeAnführer(rasse));
+        // Dann die restlichen Einheiten hinzufügen
+        for (int i = 1; i < anzahl; i++) {
+            addEinheit(kaufeNormaleEinheit(rasse));
+        }
+    }
+
+    // Methode zum Kaufen eines Anführers einer bestimmten Rasse
+    private Wesen kaufeAnführer(Rasse rasse) {
+        if (rasse == Rasse.MENSCH) {
+            return new Mensch("Erzmagier Mensch");
+        } else if (rasse == Rasse.ORK) {
+            return new Ork("Farseer Ork");
+        } else if (rasse == Rasse.NACHTELF) {
+            return new Nachtelf("Deamonslayer Nachtelf");
+        } else if (rasse == Rasse.UNTOTER) {
+            return new Untoter("Lich Untoter");
+        }
+        return null;
+    }
+
+    // Methode zum Kaufen einer normalen Einheit einer bestimmten Rasse
+    private Wesen kaufeNormaleEinheit(Rasse rasse) {
+        if (rasse == Rasse.MENSCH) {
+            return new Mensch("Mensch");
+        } else if (rasse == Rasse.ORK) {
+            return new Ork("Ork");
+        } else if (rasse == Rasse.NACHTELF) {
+            return new Nachtelf("Nachtelf");
+        } else if (rasse == Rasse.UNTOTER) {
+            return new Untoter("Untoter");
+        }
+        return null;
+
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isKampfBeendet() {
+        return kampfBeendet;
+    }
+
+    public void setKampfBeendet(boolean kampfBeendet) {
+        this.kampfBeendet = kampfBeendet;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Squad von: ").append(this.name).append("\n");
+        sb.append("  Squadgröße: ").append(this.einheiten.size()).append("\n");
+        for (Wesen einheit : this.einheiten) {
+            sb.append("    ").append(einheit.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    public void kaempfe(Squad gegner) {
+        Random random = new Random();
+        // Jedes Wesen des aktuellen Squads kämpft einmal gegen ein zufälliges Wesen des
+        // gegnerischen Squads
+        for (Wesen angreifer : this.getEinheiten()) {
+            if (angreifer.isAlive()) {
+                if (!gegner.getEinheiten().isEmpty()) {
+                    // Zufälliges Ziel auswählen
+                    int randomIndex = random.nextInt(gegner.getEinheiten().size());
+                    Wesen ziel = gegner.getEinheiten().get(randomIndex);
+                    // Angreifen
+                    double schaden = angreifer.attack(ziel);
+                    System.out.println(angreifer.getName() + " ⚔️ " + ziel.getName() + " -> Schaden: " + schaden);
+                    // Überprüfen, ob das Ziel besiegt wurde
+                    if (!ziel.isAlive()) {
+                        System.out.println("   " + ziel.getName() + " ☠️☠️☠️");
+                        // Das besiegte Wesen aus der Liste entfernen
+                        gegner.removeEinheit(ziel);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Führt einen Kampf zwischen diesem Squad und einem gegnerischen Squad durch.
+     * 
+     * @param gegner Der gegnerische Squad.
+     */
+    public String kampf(Squad gegner) {
+        // Überprüfen, ob beide Squads Einheiten haben
+        if (this.getEinheiten().isEmpty() || gegner.getEinheiten().isEmpty()) {
+            System.out.println("Ein Squad hat keine Einheiten. Der Kampf kann nicht beginnen.");
+            return "Unentschieden";
+        }
+
+        boolean squad1GreiftAn = true;
+
+        while (!this.getEinheiten().isEmpty() && !gegner.getEinheiten().isEmpty()) {
+            // Squad 1 greift an
+            if (squad1GreiftAn) {
+                for (Wesen angreifer : new ArrayList<>(this.getEinheiten())) {
+                    if (angreifer.isAlive()) {
+                        // Überprüfen, ob es noch Ziele gibt
+                        if (gegner.getEinheiten().isEmpty()) {
+                            break;
+                        }
+                        // Zufälliges Ziel auswählen
+                        int randomIndex = new Random().nextInt(gegner.getEinheiten().size());
+                        Wesen ziel = gegner.getEinheiten().get(randomIndex);
+                        // Angreifen
+                        double schaden = angreifer.attack(ziel);
+                        System.out.println(angreifer.getName() + " ⚔️ " + ziel.getName() + " -> Schaden: " + schaden);
+                        // Überprüfen, ob das Ziel besiegt wurde
+                        if (!ziel.isAlive()) {
+                            System.out.println("   " + ziel.getName() + " ☠️☠️☠️");
+                            // Das besiegte Wesen aus der Liste entfernen
+                            gegner.getEinheiten().remove(ziel);
+                        }
+                    }
+                }
+                squad1GreiftAn = false;
+            }
+            // Squad 2 greift an
+            else {
+                for (Wesen angreifer : new ArrayList<>(gegner.getEinheiten())) {
+                    if (angreifer.isAlive()) {
+                        // Überprüfen, ob es noch Ziele gibt
+                        if (this.getEinheiten().isEmpty()) {
+                            break;
+                        }
+                        // Zufälliges Ziel auswählen
+                        int randomIndex = new Random().nextInt(this.getEinheiten().size());
+                        Wesen ziel = this.getEinheiten().get(randomIndex);
+                        // Angreifen
+                        double schaden = angreifer.attack(ziel);
+                        System.out.println(angreifer.getName() + " ⚔️ " + ziel.getName() + " -> Schaden: " + schaden);
+                        // Überprüfen, ob das Ziel besiegt wurde
+                        if (!ziel.isAlive()) {
+                            System.out.println("   " + ziel.getName() + " ☠️☠️☠️");
+                            // Das besiegte Wesen aus der Liste entfernen
+                            this.getEinheiten().remove(ziel);
+                        }
+                    }
+                }
+                squad1GreiftAn = true;
+            }
+        }
+
+        // Überprüfen, wer den Kampf gewonnen hat
+        if (this.getEinheiten().isEmpty() && !gegner.getEinheiten().isEmpty()) {
+            return gegner.getName();
+        } else if (!this.getEinheiten().isEmpty() && gegner.getEinheiten().isEmpty()) {
+            return this.getName();
+        } else {
+            return "Unentschieden";
+        }
+    }
+
+}
