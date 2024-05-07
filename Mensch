@@ -1,0 +1,19 @@
+package pr2.vererbung.racewars.model;
+
+public class Mensch extends Wesen {
+
+    public Mensch(String name) {
+        super(name, 140.0, 40.0, 2.0, 0.4);
+    }
+   
+    @Override
+    public String toString() {
+        return "Mensch " + super.toString();
+    }
+
+    @Override
+    public Rasse getRasse() {
+        return Rasse.MENSCH;
+    }
+
+}
