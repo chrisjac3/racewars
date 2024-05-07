@@ -1,0 +1,78 @@
+package pr2.vererbung.racewars.model;
+
+public class WesenFactory {
+
+    /**
+     * Erzeugt eine Gruppe von Wesen basierend auf der übergebenen Rasse und dem verfügbaren Geld.
+     * Das erste Element der Gruppe ist immer der Anführer.
+     *
+     * @param rasse Die Rasse, von der die Wesen erzeugt werden sollen.
+     * @param geld  Das verfügbare Geld, das für den Kauf von Wesen verwendet werden soll.
+     * @return Ein Array von Wesen, wobei das erste Element der Anführer ist.
+     */
+    public static Wesen[] create(Rasse rasse, int geld) {
+        // Array für gekaufte Wesen
+        Wesen[] wesenArray = new Wesen[geld / rasse.getWesenKosten() + 1];
+
+        // Geld für den Anführer abziehen
+        int anfuehrerKosten = rasse.getAnfuehrerKosten();
+        if (geld < anfuehrerKosten) {
+            // Reicht das Geld nicht für den Anführer, leeres Array zurückgeben
+            return new Wesen[0];
+        }
+        geld -= anfuehrerKosten;
+
+        // Anführer hinzufügen
+        wesenArray[0] = kaufeAnführer(rasse);
+
+        // Index für nächstes zu kaufendes Wesen im Array
+        int index = 1;
+
+        // Solange noch Geld vorhanden ist und Platz für weitere Wesen vorhanden ist
+        while (geld >= rasse.getWesenKosten()) {
+            // Wesen hinzufügen
+            Wesen einheit = kaufeNormaleEinheit(rasse);
+            if (einheit == null) {
+                break; // Keine weiteren Einheiten verfügbar
+            }
+            wesenArray[index] = einheit;
+            // Kosten für Wesen vom verfügbaren Geld abziehen
+            geld -= rasse.getWesenKosten();
+            index++;
+        }
+
+        // Neues Array erstellen, das nur die tatsächlich gekauften Wesen enthält
+        Wesen[] gekaufteWesen = new Wesen[index];
+        System.arraycopy(wesenArray, 0, gekaufteWesen, 0, index);
+
+        return gekaufteWesen;
+    }
+
+    // Methode zum Kaufen eines Anführers einer bestimmten Rasse
+    private static Wesen kaufeAnführer(Rasse rasse) {
+        if (rasse == Rasse.MENSCH) {
+            return new Mensch("Erzmagier Mensch");
+        } else if (rasse == Rasse.ORK) {
+            return new Ork("Farseer Ork");
+        } else if (rasse == Rasse.NACHTELF) {
+            return new Nachtelf("Deamonslayer Nachtelf");
+        } else if (rasse == Rasse.UNTOTER) {
+            return new Untoter("Lich Untoter");
+        }
+        return null;
+    }
+
+    // Methode zum Kaufen einer normalen Einheit einer bestimmten Rasse
+    private static Wesen kaufeNormaleEinheit(Rasse rasse) {
+        if (rasse == Rasse.MENSCH) {
+            return new Mensch("Mensch");
+        } else if (rasse == Rasse.ORK) {
+            return new Ork("Ork");
+        } else if (rasse == Rasse.NACHTELF) {
+            return new Nachtelf("Nachtelf");
+        } else if (rasse == Rasse.UNTOTER) {
+            return new Untoter("Untoter");
+        }
+        return null;
+    }
+}
