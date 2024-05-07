@@ -1,0 +1,19 @@
+package pr2.vererbung.racewars.model;
+
+public class Untoter extends Wesen {
+    
+    public Untoter(String name) {
+        super(name, 120.0, 16.0, 2.0, 0.3);
+    }
+  
+    @Override
+    public String toString() {
+        return "Untoter " + super.toString();
+    }
+
+    @Override
+    public Rasse getRasse() {
+        return Rasse.UNTOTER;
+    }
+
+}
