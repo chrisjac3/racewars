@@ -1,0 +1,22 @@
+package pr2.vererbung.racewars.model;
+
+/**
+ * Die Klasse repräsentiert die vier Elemente.
+ */
+public final class Element {
+    public static final Element ERDE = new Element("Erde");
+    public static final Element WASSER = new Element("Wasser");
+    public static final Element FEUER = new Element("Feuer");
+    public static final Element LUFT = new Element("Luft");
+
+    private final String name;
+
+    private Element(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+}
